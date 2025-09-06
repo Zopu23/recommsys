@@ -179,7 +179,10 @@ export default function App() {
 
       {/* Main */}
       <main className="main">
-        <div className="h1">Recommsys</div>
+        <h1 className="brand">
+        Paper Pulse <span className="dot" />
+        <small>beta</small>
+        </h1>
 
         {filtered.map(it => {
           const isRead = readIds.has(it.id);
