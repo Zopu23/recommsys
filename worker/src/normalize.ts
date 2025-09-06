@@ -1,62 +1,45 @@
-import type { FeedItem } from "shared/src/schema.js";  
-import { FeedItemSchema } from "shared/src/schema.js";
+import type { FeedType } from "./sources.js";
 
-/** Safe ISO date */
-export function toIsoDate(input?: string): string {
-  if (!input) return new Date().toISOString();
-  const d = new Date(input);
-  return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
-}
+export type FeedItem = {
+  id: string;
+  title: string;
+  source: string;
+  link: string;
+  authors: string[];
+  summary?: string;
+  type: FeedType;
+  date: string; // ISO
+  tags: string[];
+};
 
-/** Normalize an rss-parser item into our FeedItem shape */
 export function normalizeRssItem(
   sourceName: string,
-  type: FeedItem["type"],
+  type: FeedType,
   raw: any
 ): FeedItem {
-  const id = String(raw.guid || raw.id || raw.link || `${sourceName}:${raw.title || Math.random()}`);
-  const link = String(raw.link || "");
-  const title = String(raw.title || "Untitled");
-
-  // rss-parser commonly exposes creator/author or arrays on some feeds
-  const authors: string[] = []
-    .concat(raw.creator ?? [])
-    .concat(raw.author ?? [])
-    .flat()
-    .filter(Boolean)
-    .map((x: any) => String(x));
-
-  const summary = (raw.contentSnippet || raw.content || raw.summary || "")
-    ?.toString()
-    .trim()
-    .slice(0, 1000);
-
-  const date = toIsoDate(raw.isoDate || raw.pubDate || raw.updated);
-
-  const candidate: FeedItem = {
-    id,
-    title,
+  return {
+    id: String(raw.guid ?? raw.id ?? raw.link ?? raw.title ?? Math.random()),
+    title: String(raw.title ?? "Untitled"),
     source: sourceName,
-    link,
-    authors,
-    summary,
+    link: String(raw.link ?? ""),
+    authors: raw.creator ? [String(raw.creator)] : [],
+    summary: String(raw.contentSnippet ?? raw.content ?? "").slice(0, 600),
     type,
-    date,
-    tags: []
+    date: String(raw.isoDate ?? raw.pubDate ?? new Date().toISOString()),
+    tags: [],
   };
-
-  return FeedItemSchema.parse(candidate);
 }
 
-/** Remove duplicates across sources (by link+title) */
 export function dedupe(items: FeedItem[]): FeedItem[] {
   const seen = new Set<string>();
   const out: FeedItem[] = [];
   for (const it of items) {
-    const key = `${(it.link || "").toLowerCase()}__${(it.title || "").toLowerCase()}`;
+    const key = it.link || `${it.source}:${it.title}`;
     if (seen.has(key)) continue;
     seen.add(key);
     out.push(it);
   }
+  // newest first (works fine for ISO strings)
+  out.sort((a, b) => b.date.localeCompare(a.date));
   return out;
 }
