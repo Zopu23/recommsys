@@ -5,7 +5,9 @@
   "scripts": {
     "dev:web": "npm --workspace web run dev",
     "dev:worker": "npm --workspace worker run dev",
-    "dev": "concurrently -k \"npm:dev:web\" \"npm:dev:worker\""
+    "dev": "concurrently -k \"npm:dev:web\" \"npm:dev:worker\"",
+    "ingest:setup": "pwsh -Command \"if (-Not (Test-Path .\\.venv)) { python -m venv .venv }; .\\.venv\\Scripts\\python.exe -m pip install --upgrade pip; .\\.venv\\Scripts\\pip.exe install -r requirements-ingest.txt\"",
+    "ingest": "pwsh -Command .\\.venv\\Scripts\\python.exe scripts/ingest_docs.py"
   },
   "devDependencies": { "concurrently": "^9.0.0" }
 }
