@@ -31,7 +31,7 @@ export interface RecommendationItem { model: ModelCard; score: ScoreBreakdown; p
 export interface RecommendRequest { task: string; constraints?: Constraints; mustInclude?: string[]; mustExclude?: string[] }
 export interface RecommendResponse { items: RecommendationItem[]; rationaleMd?: string; citations?: Citation[] }
 
-const BASE = '' // use Vite dev proxy; empty base means same-origin
+const BASE = (import.meta as any).env?.VITE_API_BASE ?? '' // same-origin in dev; configurable in prod
 
 export async function fetchModels(): Promise<ModelCard[]> {
 	const r = await fetch(`${BASE}/api/models`)
