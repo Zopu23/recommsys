@@ -36,3 +36,7 @@ __pycache__/
 
 # Logs
 *.log
+# Data (exclude large datasets)
+data/
+data/raw/
+data/ingested/
