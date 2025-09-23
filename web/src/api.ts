@@ -1,33 +1,47 @@
-import axios from "axios";
-import { FeedItemSchema, type FeedItem } from "shared/src/schema";
+export type Modality = 'text' | 'vision' | 'audio' | 'multimodal'
 
-type GetFeedsParams = {
-  q?: string;
-  type?: "paper" | "blog" | "repo";
-  feeds?: string[]; // list of feed URLs to override defaults
-};
-
-export async function getFeeds(params: GetFeedsParams = {}): Promise<FeedItem[]> {
-  const query: Record<string, string> = {};
-  if (params.q) query.q = params.q;
-  if (params.type) query.type = params.type;
-  if (params.feeds?.length) query.feeds = params.feeds.join(",");
-
-  const { data } = await axios.get("/feeds", { params: query });
-
-  const parsed = FeedItemSchema.array().safeParse(data);
-  if (!parsed.success) {
-    console.error(parsed.error.format());
-    throw new Error("Invalid feed data from backend");
-  }
-  return parsed.data;
+export interface Citation { url?: string; sourceId?: string; title?: string; quote?: string }
+export interface ModelCard {
+	name: string
+	provider: string
+	family?: string
+	license?: string
+	modality: Modality[]
+	contextTokens?: number
+	priceInPerMTok?: number
+	priceOutPerMTok?: number
+	speedTokPerSec?: number
+	latencyMs?: number
+	selfHostable?: boolean
+	tags?: string[]
+	sourceRefs?: Citation[]
 }
 
-export async function getHealth(): Promise<boolean> {
-  try {
-    const { data } = await axios.get("/health");
-    return !!data?.ok;
-  } catch {
-    return false;
-  }
+export interface Constraints {
+	budgetUSD?: number
+	latencyMs?: number
+	privacy?: 'api' | 'self_host'
+	languages?: string[]
+	contextTokensNeeded?: number
+	modalities?: Modality[]
 }
+
+export interface ScoreBreakdown { total: number; factors: Record<string, number> }
+export interface RecommendationItem { model: ModelCard; score: ScoreBreakdown; priceEstimateUSD?: number; latencyEstimateMs?: number; fitNotes?: string[]; citations: Citation[] }
+export interface RecommendRequest { task: string; constraints?: Constraints; mustInclude?: string[]; mustExclude?: string[] }
+export interface RecommendResponse { items: RecommendationItem[]; rationaleMd?: string; citations?: Citation[] }
+
+const BASE = '' // use Vite dev proxy; empty base means same-origin
+
+export async function fetchModels(): Promise<ModelCard[]> {
+	const r = await fetch(`${BASE}/api/models`)
+	if (!r.ok) throw new Error(`models ${r.status}`)
+	return r.json()
+}
+
+export async function recommend(body: RecommendRequest): Promise<RecommendResponse> {
+	const r = await fetch(`${BASE}/api/recommend`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+	if (!r.ok) throw new Error(`recommend ${r.status}`)
+	return r.json()
+}
+
