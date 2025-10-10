@@ -1,4 +1,14 @@
 :root {
+  color-scheme: light;
+}
+
+body { margin: 0 }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0 }
+  100% { background-position: 200% 0 }
+}
+:root {
   --bg-start: #0f0c29;
   --bg-mid: #302b63;
   --bg-end: #24243e;
@@ -58,4 +68,10 @@ button:focus-visible {
 
 @media (prefers-color-scheme: light) {
   :root { color-scheme: light; }
+}
+
+/* Loading skeleton shimmer used on Tracker page */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
