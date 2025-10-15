@@ -1,13 +1,13 @@
 import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
-import '../index.css'
+import './index.css'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import TrackerPage from './pages/TrackerPage'
-import TopNav from '../ui/TopNav'
+import TopNav from './ui/TopNav'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 
-const AdvisorApp = lazy(() => import('../App'))
+const AdvisorApp = lazy(() => import('./App'))
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

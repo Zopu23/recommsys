@@ -1,5 +1,4 @@
-// Restored tracker page (condensed export) – see previous edits for full features
-export { default } from '../../../web/src/pages/TrackerPage'
+// Restored full tracker page implementation
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 // Minimal inline styles to match the screenshots
