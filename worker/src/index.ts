@@ -1,12 +1,42 @@
 import express from 'express'
 import cors from 'cors'
 import Parser from 'rss-parser'
+import crypto from 'crypto'
 
 const app = express()
 app.use(cors())
+app.use(express.json())
 
 app.get('/health', (_req, res) => {
   res.json({ ok: true })
+})
+
+// In-memory demo user store (email -> { hash, salt })
+const users = new Map<string, { hash: string; salt: string }>()
+
+function hashPassword(password: string, salt?: string) {
+  const s = salt || crypto.randomBytes(16).toString('hex')
+  const hash = crypto.pbkdf2Sync(password, s, 100_000, 32, 'sha256').toString('hex')
+  return { hash, salt: s }
+}
+
+app.post('/auth/signup', (req, res) => {
+  const { email, password } = req.body || {}
+  if (!email || !password) return res.status(400).json({ ok: false, error: 'Missing email or password' })
+  if (users.has(email)) return res.status(409).json({ ok: false, error: 'User already exists' })
+  const { hash, salt } = hashPassword(password)
+  users.set(email, { hash, salt })
+  return res.json({ ok: true })
+})
+
+app.post('/auth/login', (req, res) => {
+  const { email, password } = req.body || {}
+  if (!email || !password) return res.status(400).json({ ok: false, error: 'Missing email or password' })
+  const u = users.get(email)
+  if (!u) return res.status(401).json({ ok: false, error: 'Invalid credentials' })
+  const { hash } = hashPassword(password, u.salt)
+  if (hash !== u.hash) return res.status(401).json({ ok: false, error: 'Invalid credentials' })
+  return res.json({ ok: true })
 })
 
 // Simple /feeds aggregator using rss-parser as a baseline
