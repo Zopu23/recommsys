@@ -1,5 +1,3 @@
-// Restored tracker page (condensed export) – see previous edits for full features
-export { default } from '../../../web/src/pages/TrackerPage'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 // Minimal inline styles to match the screenshots
@@ -315,7 +313,7 @@ export default function TrackerPage() {
                 const selected = activeKws.includes(k)
                 return (
                   <span key={k} style={{ ...(styles.pill as any), background: selected ? '#e0e7ff' : '#f1f5f9', borderColor: selected ? '#93c5fd' : '#e2e8f0', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <button onClick={()=>toggleActiveKw(k)} style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>{k}</button>
+                    <button onClick={()=>toggleActiveKw(k)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#0f172a' }}>{k}</button>
                     <button onClick={(ev)=>{ ev.stopPropagation(); removeKeyword(k) }} title="Remove" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#64748b' }}>×</button>
                   </span>
                 )
