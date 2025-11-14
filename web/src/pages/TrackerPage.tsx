@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-// Minimal inline styles to match the screenshots
 const styles = {
   page: {
     fontFamily:
@@ -222,7 +221,7 @@ export default function TrackerPage() {
     refreshFeeds()
   }, []) // initial load
 
-  // Finance trend detection: compare last 7 days vs prior 7 days for finance-related terms
+  // Finance trend detection...
   useEffect(() => {
     if (!entries.length) {
       setFinanceTrends([])
@@ -376,7 +375,7 @@ export default function TrackerPage() {
         style={{
           ...styles.header,
           position: 'sticky',
-          top: 56,
+          top: 0,
           zIndex: 5,
           background: '#f8fafc',
         }}
@@ -406,14 +405,16 @@ export default function TrackerPage() {
       </header>
 
       <div style={styles.grid}>
+        {/* LEFT – filters/keywords/sources */}
         <aside
           style={{
             ...styles.sidebar,
             position: 'sticky',
-            top: 156,
+            top: 120,
             height: 'fit-content',
           }}
         >
+          {/* Filters */}
           <section style={styles.card as any}>
             <h3 style={styles.cardTitle as any}>Filters</h3>
             <div style={{ display: 'grid', gap: 8 }}>
@@ -445,9 +446,7 @@ export default function TrackerPage() {
                   style={styles.input as any}
                 />
               </div>
-              <div
-                style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}
-              >
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <label
                   style={{
                     display: 'flex',
@@ -538,6 +537,7 @@ export default function TrackerPage() {
             </div>
           </section>
 
+          {/* Tracked keywords */}
           <section style={styles.card as any}>
             <h3 style={styles.cardTitle as any}>Tracked keywords</h3>
             <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
@@ -567,9 +567,7 @@ export default function TrackerPage() {
                 </button>
               )}
             </div>
-            <div
-              style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}
-            >
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {(keywords as string[]).map((k) => {
                 const selected = activeKws.includes(k)
                 return (
@@ -616,6 +614,7 @@ export default function TrackerPage() {
             </div>
           </section>
 
+          {/* Sources */}
           <section style={styles.card as any}>
             <h3 style={styles.cardTitle as any}>Sources</h3>
             <div style={styles.info as any}>
@@ -626,6 +625,7 @@ export default function TrackerPage() {
           </section>
         </aside>
 
+        {/* RIGHT - feed + finance trends */}
         <main>
           {error && <div style={styles.error as any}>{error}</div>}
           {loading ? (

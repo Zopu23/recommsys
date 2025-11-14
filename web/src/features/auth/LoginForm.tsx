@@ -1,39 +1,19 @@
 import { useState, type CSSProperties, type FormEvent } from 'react'
 
-export default function Signup() {
+export default function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [msg, setMsg] = useState('')
-  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  async function submit(e: FormEvent) {
+  function onSubmit(e: FormEvent) {
     e.preventDefault()
-    setSubmitting(true)
-    setMsg('')
-
-    try {
-      const r = await fetch('http://localhost:8787/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
-      const data = await r.json().catch(() => ({}))
-
-      if (r.ok && data?.ok) {
-        setMsg('Account created. You can log in now.')
-      } else {
-        setMsg(data?.error || 'Sign up failed')
-      }
-    } catch {
-      setMsg('Network error')
-    } finally {
-      setSubmitting(false)
-    }
+    setError('') // hook up real auth later
+    // TODO: call your backend / Firebase etc.
   }
 
   return (
     <div style={pageStyle}>
-      <form onSubmit={submit} style={cardStyle}>
+      <form onSubmit={onSubmit} style={cardStyle}>
         <div style={{ marginBottom: 12 }}>
           <h2
             style={{
@@ -44,7 +24,7 @@ export default function Signup() {
               textAlign: 'center',
             }}
           >
-            Create account
+            Login
           </h2>
           <p
             style={{
@@ -55,47 +35,58 @@ export default function Signup() {
               textAlign: 'center',
             }}
           >
-            Start using LLM Area with a free account.
+            Access your LLM Area account.
           </p>
         </div>
 
         <div style={{ display: 'grid', gap: 12 }}>
           {/* Email */}
           <div style={fieldStyle}>
-            <label htmlFor="email" style={labelStyle}>
+            <label style={labelStyle} htmlFor="email">
               Email
             </label>
             <input
               id="email"
               type="email"
-              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
               style={inputStyle}
             />
           </div>
 
           {/* Password */}
           <div style={fieldStyle}>
-            <label htmlFor="password" style={labelStyle}>
+            <label style={labelStyle} htmlFor="password">
               Password
             </label>
             <input
               id="password"
               type="password"
-              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
               style={inputStyle}
             />
           </div>
         </div>
 
-        {!!msg && <div style={messageStyle}>{msg}</div>}
+        {error && <div style={errorStyle}>{error}</div>}
 
-        <button type="submit" disabled={submitting} style={buttonStyle}>
-          {submitting ? 'Creating…' : 'Create account'}
+        <button type="submit" style={buttonStyle}>
+          Login
         </button>
+
+        <div
+          style={{
+            marginTop: 10,
+            fontSize: 13,
+            color: '#6b7280',
+            textAlign: 'center',
+          }}
+        >
+          Forgot your password? <span style={{ color: '#1d4ed8' }}>Reset it</span>
+        </div>
       </form>
     </div>
   )
@@ -104,8 +95,8 @@ export default function Signup() {
 /* ---------- styles ---------- */
 
 const pageStyle: CSSProperties = {
-  background: '#f8fafc', // same as leaderboard / advisor / login
-  minHeight: 'calc(100vh - 56px)', // allow for top nav
+  background: '#f8fafc', // same as tracker / advisor
+  minHeight: 'calc(100vh - 56px)', // account for top nav
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'flex-start',
@@ -158,13 +149,13 @@ const buttonStyle: CSSProperties = {
   fontWeight: 500,
 }
 
-const messageStyle: CSSProperties = {
+const errorStyle: CSSProperties = {
   marginTop: 8,
   padding: 8,
   borderRadius: 8,
+  background: '#fee2e2',
+  border: '1px solid #fecaca',
+  color: '#b91c1c',
   fontSize: 13,
   textAlign: 'center',
-  background: '#eff6ff',
-  border: '1px solid #bfdbfe',
-  color: '#1d4ed8',
 }
