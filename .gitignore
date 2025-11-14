@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+worker/node_modules/
+
+# Builds
+dist/
+build/
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
